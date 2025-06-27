@@ -6,36 +6,93 @@ Este Gestor de notas permitirá :
 - Eliminar nota
 - Guardar en archivo
 """
-notas = [{"titulo": "algo", "contenido": "algo"}]
+
+notas = [{"titulo": "Estudiar python", "contenido": "El sabado por la mañana"},
+        {"titulo": "Supermercado", "contenido": "Comprar mercaderia del mes"},
+        {"titulo": "Anime", "contenido": "Ver 2 capitulos de bleach"},
+        {"titulo": "Prueba", "contenido": "Nota para elminar"},
+        {"titulo": "Prueba", "contenido": "Nota para elminar 2"}]
 
 
 def agregar_nota():
     print("\n=== Agregar Nota ===")
-    titulo = input("Titulo de la nota: ").strip()
-    contenido = input("Contenido de la nota : ").strip()
+    
+    while True:
+        titulo = input("Titulo de la nota: ").strip()
+        contenido = input("Contenido de la nota : ").strip()
+        if not titulo or not contenido:
+            print("El título o el contenido no pueden estar va")
 
-    nota = {
-        "titulo": titulo,
-        "contenido": contenido
-    }
-    notas.append(nota)
-    print("Nota agregada correctamente \n")
+        nota = {
+            "titulo": titulo,
+            "contenido": contenido
+        }
+        notas.append(nota)
+        print("Nota agregada correctamente \n")
+        break
 
 
 def mostrar_notas():
     resultado = []
     for nota in notas:
-        for titulo, contenido in nota.items():
-            resultado.append((titulo, contenido))
+        resultado.append((nota["titulo"], nota["contenido"]))
     return resultado
     
 
 def buscar_en_notas():
-    pass
+    print("\n== Buscar en notas ==")
+    palabra_clave = input("Introduce la palabra clave para buscar : ").strip().lower()
+
+    notas_encontradas = []
+    for nota in notas:
+        if palabra_clave in nota["titulo"].lower() or palabra_clave in nota["contenido"].lower():
+            notas_encontradas.append(nota)
+        
+    return notas_encontradas, palabra_clave
 
 
 def eliminar_nota():
-    pass
+    print("\n == Eliminar Nota ==")
+    titulo_a_eliminar = input("Ingresa el título de la nota que deseas eliminar: ").strip().lower()
+
+    posibles_notas_a_eliminar = []
+
+    for i, nota in enumerate(notas):
+        if titulo_a_eliminar == nota["titulo"].lower():
+            posibles_notas_a_eliminar.append((i, nota))
+    if not posibles_notas_a_eliminar:
+        print(f'No se encontraron notas con el titulo {titulo_a_eliminar}.\n')
+    elif len(posibles_notas_a_eliminar) == 1:
+        indice_a_eliminar, nota_encontrada = posibles_notas_a_eliminar[0]
+        print('\nSe encontró una nota:')
+        print(f'Título: {nota_encontrada["titulo"]}')
+        print("_____________________")
+        print(f'Contenido: {nota["contenido"]}')
+        confirmacion = input("Estas seguro que quieres eliminar esta nota? (s/n):").strip().lower()
+        if confirmacion == "s":
+            del notas[indice_a_eliminar]
+            print("Nota eliminada correctamente. \n")
+        else:
+            print("Operación cancelada. \n")
+    else:
+        for j,(indice_original, nota_actual) in enumerate(posibles_notas_a_eliminar):
+            print(f"{j+1}. Título: {nota_actual["titulo"]} - Contenido: {nota_actual["contenido"][:30]} ...")
+
+        while True:
+            try:
+                seleccion = int(input("Ingresa el número  de la nota que deseas eliminar o 0 para Cancelar: "))
+                if seleccion == 0:
+                    print("Operación cancelada.\n")
+                    break
+                elif 1 <= seleccion <= len(posibles_notas_a_eliminar):
+                    indice_en_notas_original = posibles_notas_a_eliminar[seleccion - 1][0]
+                    del notas[indice_en_notas_original]
+                    print("nota eliminada correctamente. \n")
+                    break
+                else:
+                    print("Número invalido, por favor intenta nuevamente.")
+            except ValueError:
+                print("Entrada inválida. Por favor, ingresa un número nuevamente")
 
 
 def guardar_en_archivo():
@@ -58,13 +115,33 @@ while True:
     opcion = input("Ingresa una opcion: \n")
     
     if opcion == "1":
-        pass
+        agregar_nota()
+
     elif opcion == "2":
-        pass
+
+        notas_obtenidas = mostrar_notas()
+        if not notas_obtenidas:
+            print("No hay notas para mostrar aún.\n")
+        else:
+            for titulo, contenido in notas_obtenidas:
+                print(f'Título: {titulo}')
+                print('----------------')
+                print(f'Contenido : {contenido}\n')
+
     elif opcion == "3":
-        pass
+        notas_encontradas, palabra_clave = buscar_en_notas()
+
+        if not notas_encontradas: 
+            print(f"No se encontraron Notas con la palabra {palabra_clave} en las notas")
+        else:
+            print(f"Notas encontradas para {palabra_clave}")
+        for nota in notas_encontradas:
+            print(f"Título: {nota["titulo"]}")
+            print("-----------------------")
+            print(f"Contenido: {nota["contenido"]}")
+
     elif opcion == "4":
-        pass
+        eliminar_nota()
     elif opcion == "5":
         pass
     elif opcion == "6":
