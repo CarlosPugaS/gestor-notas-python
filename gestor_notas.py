@@ -4,14 +4,12 @@ Este Gestor de notas permitirá :
 - Leer todas las notas
 - Buscar por palabra clave
 - Eliminar nota
-- Guardar en archivo
+- Guardar las notas en un archivo Notas.json
+- Leer notas desde el archivo Notas.json
 """
+import json
 
-notas = [{"titulo": "Estudiar python", "contenido": "El sabado por la mañana"},
-        {"titulo": "Supermercado", "contenido": "Comprar mercaderia del mes"},
-        {"titulo": "Anime", "contenido": "Ver 2 capitulos de bleach"},
-        {"titulo": "Prueba", "contenido": "Nota para elminar"},
-        {"titulo": "Prueba", "contenido": "Nota para elminar 2"}]
+notas = []
 
 
 def agregar_nota():
@@ -58,6 +56,7 @@ def eliminar_nota():
     posibles_notas_a_eliminar = []
 
     for i, nota in enumerate(notas):
+        print(i, nota)
         if titulo_a_eliminar == nota["titulo"].lower():
             posibles_notas_a_eliminar.append((i, nota))
     if not posibles_notas_a_eliminar:
@@ -75,7 +74,9 @@ def eliminar_nota():
         else:
             print("Operación cancelada. \n")
     else:
-        for j,(indice_original, nota_actual) in enumerate(posibles_notas_a_eliminar):
+        print(f"\nSe encontraron varias notas con el titulo '{titulo_a_eliminar}'")
+
+        for j, (indice_original, nota_actual) in enumerate(posibles_notas_a_eliminar):
             print(f"{j+1}. Título: {nota_actual["titulo"]} - Contenido: {nota_actual["contenido"][:30]} ...")
 
         while True:
@@ -96,7 +97,22 @@ def eliminar_nota():
 
 
 def guardar_en_archivo():
-    pass
+    nombre_archivo = "mis_notas.json"
+
+    with open(nombre_archivo, "w") as archivo:
+        json.dump(notas, archivo, indent=4)
+
+
+def cargar_desde_archivo():
+    nombre_archivo = "mis_notas.json"
+
+    try:
+        with open(nombre_archivo, "r") as archivo:
+            pass
+    except FileNotFoundError:
+        print(f"Archivo '{nombre_archivo}' no encontrado. Se iniciará con notas vacias.")
+
+
 
 
 def mostrar_menu():
@@ -106,8 +122,9 @@ def mostrar_menu():
     print("2. leer todas las notas")
     print("3. buscar por palabra clave")
     print("4. eliminar nota")
-    print("5. Guardar la nota en un archivo")
-    print("6. Para salir")
+    print("5. Guardar notas en un archivo")
+    print("6. Cargar notas desde un archivo.")
+    print("7. Para salir")
 
 
 while True:
@@ -143,8 +160,10 @@ while True:
     elif opcion == "4":
         eliminar_nota()
     elif opcion == "5":
-        pass
+        guardar_en_archivo()
     elif opcion == "6":
+        pass
+    elif opcion == "7":
         print("Gracias por utilizar el Gestor de notas")
         break
     else:
