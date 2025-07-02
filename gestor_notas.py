@@ -50,13 +50,12 @@ def buscar_en_notas():
 
 
 def eliminar_nota():
-    print("\n == Eliminar Nota ==")
+    print("\n== Eliminar Nota ==\n")
     titulo_a_eliminar = input("Ingresa el título de la nota que deseas eliminar: ").strip().lower()
 
     posibles_notas_a_eliminar = []
 
     for i, nota in enumerate(notas):
-        print(i, nota)
         if titulo_a_eliminar == nota["titulo"].lower():
             posibles_notas_a_eliminar.append((i, nota))
     if not posibles_notas_a_eliminar:
@@ -74,14 +73,14 @@ def eliminar_nota():
         else:
             print("Operación cancelada. \n")
     else:
-        print(f"\nSe encontraron varias notas con el titulo '{titulo_a_eliminar}'")
+        print(f"\nSe encontró mas de una coincidencia para : '{titulo_a_eliminar}'\n")
 
         for j, (indice_original, nota_actual) in enumerate(posibles_notas_a_eliminar):
             print(f"{j+1}. Título: {nota_actual["titulo"]} - Contenido: {nota_actual["contenido"][:30]} ...")
 
         while True:
             try:
-                seleccion = int(input("Ingresa el número  de la nota que deseas eliminar o 0 para Cancelar: "))
+                seleccion = int(input("\nIngresa el número  de la nota que deseas eliminar o 0 para Cancelar: "))
                 if seleccion == 0:
                     print("Operación cancelada.\n")
                     break
@@ -104,32 +103,40 @@ def guardar_en_archivo():
 
 
 def cargar_desde_archivo():
+    global notas
     nombre_archivo = "mis_notas.json"
 
     try:
         with open(nombre_archivo, "r") as archivo:
-            pass
+            notas.extend(json.load(archivo))
+            print("Notas cargadas correctamente desde el archivo.\n")
     except FileNotFoundError:
-        print(f"Archivo '{nombre_archivo}' no encontrado. Se iniciará con notas vacias.")
-
-
+        print(f"\nArchivo '{nombre_archivo}' no encontrado. Se iniciará con notas vacias.")
+        notas = []
+    except json.JSONDecodeError:
+        print(f"Error al leer el archivo '{nombre_archivo}'. El archivo puede estar vacio o corrupto. Se iniciará con notas vacias.\n")
+        notas = []
+    except Exception as e:
+        print(f"Error inesperado al cargar las notas: {e}\n")
+        notas = []
 
 
 def mostrar_menu():
 
     print("\n === Gestor de Notas === \n")
     print("1. Crear una nota")
-    print("2. leer todas las notas")
-    print("3. buscar por palabra clave")
-    print("4. eliminar nota")
+    print("2. Leer todas las notas")
+    print("3. Buscar por palabra clave")
+    print("4. Eliminar nota")
     print("5. Guardar notas en un archivo")
     print("6. Cargar notas desde un archivo.")
-    print("7. Para salir")
+    print("7. Salir")
 
 
+cargar_desde_archivo()
 while True:
     mostrar_menu()
-    opcion = input("Ingresa una opcion: \n")
+    opcion = input("➔  Ingresa una opción: \n")
     
     if opcion == "1":
         agregar_nota()
@@ -141,9 +148,9 @@ while True:
             print("No hay notas para mostrar aún.\n")
         else:
             for titulo, contenido in notas_obtenidas:
-                print(f'Título: {titulo}')
-                print('----------------')
-                print(f'Contenido : {contenido}\n')
+                print(f"\nTítulo: {titulo}")
+                print('-------------------------------------')
+                print(f"Contenido : {contenido}\n")
 
     elif opcion == "3":
         notas_encontradas, palabra_clave = buscar_en_notas()
@@ -151,20 +158,20 @@ while True:
         if not notas_encontradas: 
             print(f"No se encontraron Notas con la palabra {palabra_clave} en las notas")
         else:
-            print(f"Notas encontradas para {palabra_clave}")
+            print(f"\nNotas encontradas para : '{palabra_clave}'")
         for nota in notas_encontradas:
-            print(f"Título: {nota["titulo"]}")
+            print(f"\nTítulo: {nota['titulo']}")
             print("-----------------------")
-            print(f"Contenido: {nota["contenido"]}")
+            print(f"Contenido: {nota['contenido']}")
 
     elif opcion == "4":
         eliminar_nota()
     elif opcion == "5":
         guardar_en_archivo()
     elif opcion == "6":
-        pass
+        cargar_desde_archivo()
     elif opcion == "7":
-        print("Gracias por utilizar el Gestor de notas")
+        print("== Gracias por utilizar el Gestor de notas ==")
         break
     else:
         print("Opcion invalida, vuelve a intentarlo")
